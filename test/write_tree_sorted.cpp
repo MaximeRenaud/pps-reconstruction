@@ -22,9 +22,10 @@ int main(int argc, char* argv[]) {
 
   int fNumMeasurements, fNumErrors;
   int fRunId, fBurstId;
-  int fETTT, fTriggerNumber;
+  unsigned int fETTT, fTriggerNumber; // unsigned int should have all 32 bits meaningfull
   int fChannelId[MAX_MEAS];
   double fLeadingEdge[MAX_MEAS], fTrailingEdge[MAX_MEAS], fToT[MAX_MEAS];
+  unsigned int fRawLeadingEdge[MAX_MEAS], fRawTrailingEdge[MAX_MEAS], fRawToT[MAX_MEAS];
 
   TFile* f = new TFile(output.c_str(), "recreate");
   TTree* t = new TTree("tdc", "List of TDC measurements");
@@ -36,8 +37,13 @@ int main(int argc, char* argv[]) {
   t->Branch("leading_edge", fLeadingEdge, "leading_edge[num_measurements]/D");
   t->Branch("trailing_edge", fTrailingEdge, "trailing_edge[num_measurements]/D");
   t->Branch("tot", fToT, "tot[num_measurements]/D");
-  t->Branch("ettt", &fETTT, "ettt/I");
-  t->Branch("trigger_number",&fTriggerNumber,"trigger_number/I");
+
+  t->Branch("raw_leading_edge", fRawLeadingEdge,   "raw_leading_edge[num_measurements]/i");
+  t->Branch("raw_trailing_edge", fRawTrailingEdge, "raw_trailing_edge[num_measurements]/i");
+  t->Branch("raw_tot", fRawToT, "raw_tot[num_measurements]/i");
+
+  t->Branch("ettt", &fETTT, "ettt/i"); // i for UInt_32
+  t->Branch("trigger_number",&fTriggerNumber,"trigger_number/i");
   
   ostringstream search1, search2, file;
   search2 << "_board" << board_id << ".dat";
@@ -45,7 +51,8 @@ int main(int argc, char* argv[]) {
   cout << "Search in directory: " << getenv("PPS_DATA_PATH") << endl;
   VME::TDCMeasurement m; VME::TDCEvent e;
   int num_triggers = 0, num_channel_measurements[num_channels];
-  double has_leading_per_trigger[num_channels];
+  // double has_leading_per_trigger[num_channels];
+  unsigned int has_leading_per_trigger[num_channels];
 
   for (int sp=1; sp<10000000; sp++) { // we loop over all spills
     search1.str(""); search1 << "events_" << run_id << "_" << sp << "_";
@@ -80,7 +87,7 @@ int main(int argc, char* argv[]) {
         if (e.GetType()==VME::TDCEvent::GlobalHeader) {
           for (unsigned int i=0; i<num_channels; i++) {
             num_channel_measurements[i] = 0;
-	    has_leading_per_trigger[i] = 0;
+            has_leading_per_trigger[i] = 0;
           }
           num_triggers++;
           fETTT = 0;
@@ -96,22 +103,30 @@ int main(int argc, char* argv[]) {
         else if (e.GetType()==VME::TDCEvent::TDCMeasurement) {
           unsigned int ch_id = e.GetChannelId();
           if (!e.IsTrailing()) {
-            has_leading_per_trigger[ch_id] =  e.GetTime()*25./1024.;
+            // has_leading_per_trigger[ch_id] =  e.GetTime()*25./1024.;
+            has_leading_per_trigger[ch_id] =  e.GetTime();
 	    //	  cout << "\tTDCMeasurement Leading edge: channel " << ch_id << ": " << has_leading_per_trigger[ch_id] << endl;
           }
           else {
-	    double trailing_time = e.GetTime()*25./1024.;
+            // double trailing_time = e.GetTime()*25./1024.;
+            unsigned int trailing_time = e.GetTime();
 	    //	  cout << "\tTDCMeasurement Trailing edge: channel " << ch_id << ": " << trailing_time << endl;
 	    //	  cout << "\tTDCMeasurement Trailing edge: channel " << ch_id << ": " << trailing_time-has_leading_per_trigger[ch_id] << endl;
-            if (has_leading_per_trigger[ch_id]==0.) continue;
+            if (has_leading_per_trigger[ch_id]==0) continue;
 
-	    fChannelId[fNumMeasurements] = ch_id;
-	    fLeadingEdge[fNumMeasurements] = has_leading_per_trigger[ch_id];
-	    fTrailingEdge[fNumMeasurements] = trailing_time;
-	    fToT[fNumMeasurements] = fTrailingEdge[fNumMeasurements]-fLeadingEdge[fNumMeasurements];
+            fChannelId[fNumMeasurements] = ch_id;
+
+            fLeadingEdge[fNumMeasurements] = has_leading_per_trigger[ch_id]*25./1024.;
+            fTrailingEdge[fNumMeasurements] = trailing_time*25./1024.;
+            fToT[fNumMeasurements] = fTrailingEdge[fNumMeasurements]-fLeadingEdge[fNumMeasurements];
+
+            fRawLeadingEdge[fNumMeasurements] = has_leading_per_trigger[ch_id];
+            fRawTrailingEdge[fNumMeasurements] = trailing_time;
+            fRawToT[fNumMeasurements] = fRawTrailingEdge[fNumMeasurements] - fRawLeadingEdge[fNumMeasurements];
+
             num_channel_measurements[ch_id]++;
             fNumMeasurements++;
-            has_leading_per_trigger[ch_id] = 0.;
+            has_leading_per_trigger[ch_id] = 0;
           }
         }
         else if (e.GetType()==VME::TDCEvent::ETTT) {
