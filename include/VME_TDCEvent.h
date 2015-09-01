@@ -195,7 +195,7 @@ namespace VME
       /// Extended trigger time tag
       inline uint32_t GetETTT() const {
         if (GetType()!=ETTT) return 0;
-        return static_cast<uint32_t>(fWord&0x3FFFFFF); // 26 bits (TODO: should be 27?)
+        return static_cast<uint32_t>(fWord&0x7FFFFFF); // 27 bits
       }
       /**
        * \brief Edge measurement in programmed time resolution
