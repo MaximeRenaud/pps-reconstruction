@@ -104,7 +104,7 @@ int main(int argc, char* argv[]) {
           unsigned int ch_id = e.GetChannelId();
           if (!e.IsTrailing()) {
             // has_leading_per_trigger[ch_id] =  e.GetTime()*25./1024.;
-            has_leading_per_trigger[ch_id] =  e.GetTime();
+            has_leading_per_trigger[ch_id] =  e.GetTime(); // GetTime returns uint32_t
 	    //	  cout << "\tTDCMeasurement Leading edge: channel " << ch_id << ": " << has_leading_per_trigger[ch_id] << endl;
           }
           else {

@@ -195,7 +195,7 @@ namespace VME
       /// Extended trigger time tag
       inline uint32_t GetETTT() const {
         if (GetType()!=ETTT) return 0;
-        return static_cast<uint32_t>(fWord&0x3FFFFFF);
+        return static_cast<uint32_t>(fWord&0x3FFFFFF); // 26 bits (TODO: should be 27?)
       }
       /**
        * \brief Edge measurement in programmed time resolution
@@ -204,7 +204,7 @@ namespace VME
       inline uint32_t GetTime(bool pair=false) const {
         if (GetType()!=TDCMeasurement) return 0;
         if (pair) return static_cast<uint32_t>(fWord&0xFFF);
-        else return static_cast<uint32_t>(fWord&0x7FFFF);
+        else return static_cast<uint32_t>(fWord&0x1FFFFF); // 21 bit
       }
       /// Width of pulse in programmed time resolution
       inline unsigned int GetWidth() const {
