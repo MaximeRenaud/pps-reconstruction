@@ -4,6 +4,7 @@
 #include "TH2.h"
 #include "TStyle.h"
 #include "TDatime.h"
+#include "Exception.h"
 
 namespace DQM
 {
