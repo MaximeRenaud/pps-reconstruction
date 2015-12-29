@@ -2,11 +2,12 @@
 #define Exception_h
 
 #include <iostream>
+#include <sstream>
 #include <iomanip>
 #include <string>
 #include <cstdlib> // exit()
 
-#define PrintInfo(m) Exception(__PRETTY_FUNCTION__, m, Info).Dump();
+#define PrintInfo(m) Exception(__PRETTY_FUNCTION__, m, Information).Dump();
 
 /**
  * \brief Enumeration of exception severities
@@ -16,9 +17,9 @@
 typedef enum
 {
   Undefined=-1,
-  Info,
+  Information,
   JustWarning,
-  Fatal
+  FatalException
 } ExceptionType;
 
 /**
@@ -44,7 +45,7 @@ class Exception
     }
 
     inline ~Exception() {
-      if (Type()==Fatal) exit(0);
+      if (Type()==FatalException) exit(0);
       // we stop this process' execution on fatal exception
     }
     
@@ -55,14 +56,14 @@ class Exception
     inline std::string TypeString() const {
       switch (Type()) {
         case JustWarning: return "\033[34;1mJustWarning\033[0m";
-        case Info: return "\033[33;1mInfo\033[0m";
-        case Fatal: return "\033[31;1mFatal\033[0m";
+        case Information: return "\033[33;1mInfo\033[0m";
+        case FatalException: return "\033[31;1mFatalException\033[0m";
         case Undefined: default: return "\33[7;1mUndefined\033[0m";
       }
     }
     
     inline void Dump(std::ostream& os=std::cerr) const {
-      if (Type()==Info) {
+      if (Type()==Information) {
         os << "======================= \033[33;1mInformation\033[0m =======================" << std::endl
            << " From:        " << From() << std::endl;
       }
