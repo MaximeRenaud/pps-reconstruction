@@ -157,3 +157,50 @@ FileReader::GetNextMeasurement(unsigned int channel_id, VME::TDCMeasurement* mc)
   return true;
 }
 
+bool
+FileReader::GetNextTrigger(VME::TDCTrigger* trig)
+{
+  if (fReadoutMode==VME::CONT_STORAGE) return false;
+  VME::TDCEvent ev;
+  VME::TDCTrigger out;
+  bool has_header = false;
+  unsigned int ettt_tmp = 0;
+  int lead_tmp[32];
+  while (true) {
+    if (!GetNextEvent(&ev)) return false;
+    if (!has_header) {
+      if (ev.GetType()==VME::TDCEvent::GlobalHeader) {
+        has_header = true;
+        for (unsigned int i=0; i<32; i++ ) {
+          lead_tmp[i] = -1;
+        }
+      }
+      continue; // pass until the first global header is found
+    }
+    // the header is supposed to be here now
+    if (ev.GetType()==VME::TDCEvent::TDCMeasurement) {
+      if (!ev.IsTrailing()) {
+        lead_tmp[ev.GetChannelId()] = ev.GetTime();
+        continue;
+      }
+      else {
+        if (lead_tmp[ev.GetChannelId()]<0) continue;
+        out.AddHit(ev.GetChannelId(), lead_tmp[ev.GetChannelId()], ev.GetTime());
+      }
+    }
+    if (ev.GetType()==VME::TDCEvent::ETTT) {
+      ettt_tmp = ev.GetETTT()<<5;
+      continue;
+    }
+    if (ev.GetType()==VME::TDCEvent::TDCError) {
+      out.AddError(ev.GetErrorFlags());
+    }
+    if (ev.GetType()==VME::TDCEvent::GlobalTrailer) {
+      ettt_tmp += ev.GetGeo();
+      out.SetETTT(ettt_tmp);
+      *trig = out;
+      return true;
+    }
+  }
+  return false;
+}
