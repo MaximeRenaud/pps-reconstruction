@@ -22,6 +22,7 @@ endfunction()
 
 if (ROOT_FOUND)
   add_test(write_tree_sorted)
+  add_test(NoiseIssue)
 endif()
 
 #add_test(testdb)
