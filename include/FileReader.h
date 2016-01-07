@@ -12,6 +12,7 @@
 #include "Exception.h"
 
 #include "VME_TDCMeasurement.h"
+#include "VME_TDCTrigger.h"
 
 /**
  * \brief Handler for a TDC output file readout
@@ -50,6 +51,7 @@ class FileReader
      * \return A boolean stating the success of retrieval operation
      */
     bool GetNextMeasurement(unsigned int channel_id, VME::TDCMeasurement* mc);
+    bool GetNextTrigger(VME::TDCTrigger* trig);
     
   private:
     std::ifstream fFile;
