@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
   ostringstream search1, search2, file;
   search2 << "_board" << board_id << ".dat";
   DIR* dir; struct dirent* ent;
-  cout << "Search in directory: " << getenv("PPS_DATA_PATH") << endl;
+  cout << "Search in directory: " << getenv("PPS_DATA_PATH") << endl;  //PPS_DATA_PATH = env. var., tu set in .bashrc of operating machine
   VME::TDCMeasurement m; VME::TDCEvent e;
   int num_triggers = 0, num_channel_measurements[num_channels];
   double has_leading_per_trigger[num_channels];

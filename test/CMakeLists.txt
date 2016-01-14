@@ -24,6 +24,7 @@ if (ROOT_FOUND)
   add_test(write_tree_sorted)
   add_test(NoiseIssue)
   add_test(write_tree_gastof)
+  add_test(gastof_onebyone_channel_study)
 endif()
 
 #add_test(testdb)

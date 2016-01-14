@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
     for (unsigned int sp=1; sp<max_files; sp++) { // we loop over all files
       bool file_found = false; string filename;
       // first we search for the proper file to open
-      if ((dir=opendir(getenv("PPS_DATA_PATH")))==NULL) return -1;
+      if ((dir=opendir(getenv("PPS_DATA_PATH")))==NULL) return -1;    //PPS_DATA_PATH = environment variable, stored in .bashrc of machine executing
       while ((ent=readdir(dir))!=NULL) {
         if (string(ent->d_name).find(Form("events_%d_%d_", run_id, sp))!=string::npos and
             string(ent->d_name).find(Form("_board%d", boards[i]))!=string::npos) {
