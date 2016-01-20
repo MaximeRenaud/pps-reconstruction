@@ -6,15 +6,15 @@
 
 #include <iostream>
 
-void gastof_onebyone_channel_study()
+void gastof_simple()
 {
-  const unsigned int run_id = 705;
-  TFile* f = new TFile(Form("../datasets/gastof_full_run%d.root", run_id)); //FIXME
+  const unsigned int run_id = 725;
+  TFile* f = new TFile(Form("../../gastof_inner_run%d.root", run_id)); //FIXME
   TTree* t = (TTree*)f->Get("tdc");
 
-  const unsigned int channels_to_probe = 64;
+  const unsigned int channels_to_probe = 32; //64;
   const double tot_min = 70., tot_max = -1.;
-  const double lead_min = 6.8, lead_max = 6.95; // in us
+  const double lead_min = 6.8, lead_max = 6.95; // in \mus
 
   int num_hits;
   unsigned int ettt;
@@ -37,7 +37,7 @@ void gastof_onebyone_channel_study()
   for (unsigned int i=0; i<num_triggers; i++) {
     t->GetEntry(i);
     for (unsigned int j=0; j<channels_to_probe; j++) {
-      lead[j].clear();
+//       lead[j].clear();    //lead[] not defined in gastof_simple
       mult[j] = 0;
     }
     if (i%10000==0) cerr << "Processing event " << i << " / " << num_triggers << endl;
@@ -68,18 +68,18 @@ void gastof_onebyone_channel_study()
 
   c_tot_all_chan.Pad()->SetLogy();
   {
-    TLine* line = new TLine(tot_min, 0., tot_min, h_tot_all_channels->GetMaximum()*0.8);
+    TLine* line = new TLine(tot_min, 0., tot_min, h_tot_all_channels->GetMaximum()*0.8); //constructor for line: TLine( x1, y1, x2, y2)
     line->SetLineColor(kBlack);
     line->SetLineStyle(2);
     line->SetLineWidth(2);
     line->Draw("same");
   }
-  if (tot_max>0.) {
-    TLine* line = new TLine(tot_max, 0., tot_max, h_tot_all_channels->GetMaximum()*0.8);
-    line->SetLineColor(kBlack);
-    line->SetLineStyle(2);
-    line->SetLineWidth(2);
-    line->Draw("same");
+//   if (tot_max>0.) {  //<- condition never met in gastof_simple
+//     TLine* line = new TLine(tot_max, 0., tot_max, h_tot_all_channels->GetMaximum()*0.8);
+//     line->SetLineColor(kBlack);
+//     line->SetLineStyle(2);
+//     line->SetLineWidth(2);
+//     line->Draw("same");
   }
   c_tot_all_chan.Prettify(h_tot_all_channels);
   h_tot_all_channels->SetLineColor(kGray+1);

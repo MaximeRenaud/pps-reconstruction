@@ -5,6 +5,8 @@
 #include <iostream>
 #include <map>
 
+using namespace std;
+
 class Coord {
   public:
     inline Coord() : x(0), y(0) {;}
@@ -46,13 +48,13 @@ class GastofCoordinatesMap {
       return IsNeighbour(GetCoordinates(id1), GetCoordinates(id2));
     }
     inline static int GetChannelId(const Coord& c) {
-      map<unsigned int, Coord> m = GetInstance()->fMap;
-      for (map<unsigned int, Coord>::const_iterator it=m.begin(); it!=m.end(); it++) {
+      std::map < unsigned int, Coord> m = GetInstance()->fMap;
+      for (std::map < unsigned int, Coord>::const_iterator it=m.begin(); it!=m.end(); it++) {
         if (it->second==c) return it->first;
       }
       return -1;
     }
-    typedef map<unsigned int, Coord> Neighbours;
+    typedef std::map <unsigned int, Coord> Neighbours;
     inline static Neighbours GetNeighbours(const Coord& c1) {
       Neighbours out;
       if (c1.x<8) { Coord c(c1.x+1, c1.y); out.insert(pair<unsigned int, Coord>(GetChannelId(c), c)); }
@@ -80,7 +82,7 @@ class GastofCoordinatesMap {
       fBuilt = true;
     }
     static bool fBuilt;
-    map<unsigned int, Coord> fMap;
+    std::map <unsigned int, Coord> fMap;
 };
 
 bool GastofCoordinatesMap::fBuilt = false;
