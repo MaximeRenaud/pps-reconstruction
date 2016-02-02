@@ -4,10 +4,11 @@ find_package(ROOT)
 
 if (ROOT_FOUND)
   include_directories(${ROOT_INCLUDE_DIRS})   # Sometimes [...]_DIR
-#   message("Notice me senpai !!!! : ${ROOT_INCLUDE_DIRS}\n")
+  message("Notice me !!!! Root_include_dirs : ${ROOT_INCLUDE_DIRS}\n")
   link_directories(${ROOT_LIBRARY_DIR})
-#   message("Me too senpai !!! : ${ROOT_LIBRARY_DIR}\n")
-#   message("And us senpai !!! : 1) ${ROOT_LIBRARIES}\n              2) ${ROOT_COMPONENT_LIBRARIES}\n")  #faulty !!
+  message("Me too !!! Root_Library_dir: ${ROOT_LIBRARY_DIR}\n")
+  message("And us !!! Root_libraries: 1) ${ROOT_LIBRARIES}\n             Root_component_libraries: 2) ${ROOT_COMPONENT_LIBRARIES}\n")  #faulty !!
+  message("ROOT version: ${ROOT_VERSION}")
   
   if(${ROOT_VERSION} LESS 6.0)
     set(GCC_COMPILE_FLAGS "-Wno-shadow -fPIC")
@@ -27,7 +28,7 @@ if (ROOT_FOUND)
   add_test(write_tree_sorted)
   add_test(NoiseIssue)
   add_test(write_tree_gastof)
-  add_test(gastof_simple)
+#   add_test(gastof_simple)
 endif()
 
 #add_test(testdb)
